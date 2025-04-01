@@ -26,8 +26,7 @@ A powerful, customizable, and secure **Password Generator Tool** to help you cre
 2. Navigate to the directory:
 --> cd password-generator
 
-3. Install dependencies: If you're setting up for the first time, you need to install any required dependencies. The code is self-contained, so if there are any missing modules, it will prompt you.
---> pip install -r requirements.txt
+3. Install dependencies: If you're setting up for the first time, you need to install any required dependencies. The code is self-contained, so if there are any missing modules.
 
 4. Run the script: Once the setup is done, you can run the password generator directly via the terminal/command prompt:
 --> python passwd_gen.py --help
