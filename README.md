@@ -10,7 +10,7 @@ A powerful, customizable, and secure **Password Generator Tool** to help you cre
 - **Customizable Password Length**: Control the total length of your password.
 - **Pattern-Based Generation**: Generate passwords based on a pattern (e.g., combining your name with random digits or special characters).
 - **Character Control**: Specify the exact number of numbers, lowercase letters, uppercase letters, and special characters.
-- **Leet Style**: Automatically apply Leet Style (e.g., replacing 'a' with '4', 's' with '5' or '$') to make your passwords even more secure.
+- **Leet Style**: Automatically apply Leet Style (e.g., replacing 'A' with '4', 's' with '5' or '$') to make your passwords even more secure.
 - **Custom Replacements**: Define your own custom replacements for characters (e.g., `a=4, e=3, s=5`).
 - **Multiple Passwords**: Generate multiple passwords at once with the ability to save them to a file.
 - **User-Friendly Interface**: All features are accessible via simple command-line arguments, making it easy to use for anyone.
