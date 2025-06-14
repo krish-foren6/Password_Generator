@@ -2,7 +2,9 @@ import argparse
 import secrets
 import string
 import random
+from colorama import Fore, Style
 
+ALLOWED_SPECIALS = "`!@#$%^&*_-+=:;.?/~"
 
 def print_banner():
     print("""
@@ -13,15 +15,11 @@ def print_banner():
 ╚══════════════════════════════════════════════════════╝
     """)
 
-
-def apply_replacements(text, replace_dict, leet_style):
+def apply_replacements(text, leet_style):
     leet_dict = {
         'a': '@', 'A': '4', 'e': '3', 'E': '3', 'i': '1', 'I': '1',
         'o': '0', 'O': '0', 's': ['5', '$'], 'S': ['5', '$'], 't': '7', 'T': '7'
     }
-
-    for old_char, new_char in replace_dict.items():
-        text = text.replace(old_char, new_char)
 
     if leet_style:
         for old_char, new_chars in leet_dict.items():
@@ -30,13 +28,12 @@ def apply_replacements(text, replace_dict, leet_style):
 
     return text
 
-
 def check_strength(password):
     length = len(password)
     has_lower = any(c.islower() for c in password)
     has_upper = any(c.isupper() for c in password)
     has_digit = any(c.isdigit() for c in password)
-    has_special = any(c in string.punctuation for c in password)
+    has_special = any(c in ALLOWED_SPECIALS for c in password)
 
     types = sum([has_lower, has_upper, has_digit, has_special])
 
@@ -47,24 +44,22 @@ def check_strength(password):
     else:
         return "Weak ❌"
 
-
 def generate_component(charset, count):
     return [secrets.choice(charset) for _ in range(count)]
-
 
 def generate_password(args):
     passwords = []
 
     for _ in range(args.amount):
         if args.length:
-            chars = string.ascii_letters + string.digits + string.punctuation
+            chars = string.ascii_letters + string.digits + ALLOWED_SPECIALS
             password = ''.join(secrets.choice(chars) for _ in range(args.length))
-            password = apply_replacements(password, args.replace, args.leet)
+            password = apply_replacements(password, args.leet)
         else:
             digit_part = generate_component(string.digits, args.digits)
             lower_part = generate_component(string.ascii_lowercase, args.lower)
             upper_part = generate_component(string.ascii_uppercase, args.upper)
-            special_part = generate_component(string.punctuation, args.special)
+            special_part = generate_component(ALLOWED_SPECIALS, args.special)
 
             if args.pattern:
                 components = {
@@ -79,7 +74,7 @@ def generate_password(args):
                 for key, val in components.items():
                     password = password.replace(f"{{{key}}}", val)
 
-                password = apply_replacements(password, args.replace, args.leet)
+                password = apply_replacements(password, args.leet)
 
             else:
                 password_parts = digit_part + lower_part + upper_part + special_part
@@ -87,11 +82,10 @@ def generate_password(args):
                     password_parts.append(args.word)
                 random.shuffle(password_parts)
                 password = ''.join(password_parts)
-                password = apply_replacements(password, args.replace, args.leet)
+                password = apply_replacements(password, args.leet)
 
         passwords.append(password)
     return passwords
-
 
 def save_to_file(passwords, filename):
     try:
@@ -101,7 +95,6 @@ def save_to_file(passwords, filename):
         print(f"\n✅ Saved {len(passwords)} password(s) to '{filename}'")
     except Exception as e:
         print(f"❌ Error saving file: {e}")
-
 
 def interactive_mode():
     print("\n--- Interactive Mode ---")
@@ -113,16 +106,15 @@ def interactive_mode():
         special = int(input("How many special characters? "))
         amount = int(input("How many passwords to generate? "))
         word = input("Enter a custom word to include (or leave blank): ").strip()
-        pattern = input("Enter a custom pattern (use {word}, {digit},{special}) or leave blank: ").strip()
-        replace_input = input("Custom replacements (e.g., a=4,i=1,s=5), leave blank if none: ").strip()
-        leet = input("Apply leet style? (y/n): ").strip().lower() == 'y'
 
-        replace_dict = {}
-        if replace_input:
-            for pair in replace_input.split(","):
-                if "=" in pair:
-                    key, value = pair.split("=")
-                    replace_dict[key] = value
+        pattern_input = input("Enter a custom pattern (e.g., 'wds' or {word}{digit}): ").strip()
+        pattern_map = {'w': '{word}', 'd': '{digit}', 's': '{special}', 'l': '{lower}', 'u': '{upper}'}
+        if pattern_input and '{' not in pattern_input:
+            pattern = ''.join([pattern_map.get(ch, ch) for ch in pattern_input])
+        else:
+            pattern = pattern_input
+
+        leet = input("Apply leet style? (e.g., a → @, i → 1, s → $, t → 7) (y/n): ").strip().lower() == 'y'
 
         class Args: pass
         args = Args()
@@ -134,12 +126,11 @@ def interactive_mode():
         args.amount = amount
         args.word = word
         args.pattern = pattern
-        args.replace = replace_dict
         args.leet = leet
 
         passwords = generate_password(args)
         for pw in passwords:
-            print(f"Generated Password: {pw}  | Strength: {check_strength(pw)}")
+            print(Fore.GREEN + f"Generated Password: {pw}" + Style.RESET_ALL + f"  | Strength: {check_strength(pw)}")
 
         save_choice = input("\nDo you want to save the passwords to a file? (y/n): ").strip().lower()
         if save_choice == 'y':
@@ -149,7 +140,6 @@ def interactive_mode():
     except Exception as e:
         print(f"❌ Error: {e}")
 
-
 def main():
     print_banner()
     choice = input("Choose mode: Flag Mode (f) / Interactive Mode (i): ").strip().lower()
@@ -157,7 +147,6 @@ def main():
         interactive_mode()
     else:
         print("🔧 Flag Mode is under construction. Use Interactive Mode for now.")
-
 
 if __name__ == "__main__":
     main()
