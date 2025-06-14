@@ -31,7 +31,7 @@ Digits    : 0‑9           Specials  : `!@#$%^&*_-+=:;.?/~
 
 ```bash
 # 1. Clone the repo
-$ git clone https://github.com/<your‑user>/passcraft.git && cd passcraft
+$ git clone https://github.com/krish-foren6/passcraft.git && cd passcraft
 
 # 2. Install the only external dependency
 $ pip install colorama
